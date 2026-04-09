@@ -40,7 +40,7 @@ AI → 인증 방법 포함한 완전한 파이썬 스크립트 생성
 
 ```bash
 # 저장소 클론
-git clone https://github.com/YOUR_USERNAME/kakaocloud-openapi-mcp.git
+git clone https://github.com/chals-go/kakaocloud-openapi-mcp.git
 cd kakaocloud-openapi-mcp
 
 # 의존성 설치
