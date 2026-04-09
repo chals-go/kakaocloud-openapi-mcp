@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from kakaocloud_mcp.data.loader import get_store
+from kakaocloud_openapi_mcp.data.loader import get_store
 
 
 def get_api_detail(service: str, endpoint_id: str) -> str:

@@ -47,7 +47,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 설치 확인:
 ```bash
-uvx kakaocloud-mcp --help
+uvx kakaocloud-openapi-mcp --help
 ```
 
 ### 방법 2: GitHub에서 설치
@@ -69,12 +69,12 @@ uv sync
 
 **PyPI 설치 (추천):**
 ```bash
-claude mcp add kakaocloud -- uvx kakaocloud-mcp
+claude mcp add kakaocloud -- uvx kakaocloud-openapi-mcp
 ```
 
 **GitHub 설치:**
 ```bash
-claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run kakaocloud-mcp
+claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run kakaocloud-openapi-mcp
 ```
 
 ### Claude Desktop
@@ -87,7 +87,7 @@ claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run 
   "mcpServers": {
     "kakaocloud": {
       "command": "uvx",
-      "args": ["kakaocloud-mcp"]
+      "args": ["kakaocloud-openapi-mcp"]
     }
   }
 }
@@ -99,7 +99,7 @@ claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run 
   "mcpServers": {
     "kakaocloud": {
       "command": "uv",
-      "args": ["--directory", "/path/to/kakaocloud-openapi-mcp", "run", "kakaocloud-mcp"]
+      "args": ["--directory", "/path/to/kakaocloud-openapi-mcp", "run", "kakaocloud-openapi-mcp"]
     }
   }
 }
@@ -120,7 +120,7 @@ claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run 
     "servers": {
       "kakaocloud": {
         "command": "uvx",
-        "args": ["kakaocloud-mcp"]
+        "args": ["kakaocloud-openapi-mcp"]
       }
     }
   }
@@ -134,7 +134,7 @@ claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run 
     "servers": {
       "kakaocloud": {
         "command": "uv",
-        "args": ["--directory", "/path/to/kakaocloud-openapi-mcp", "run", "kakaocloud-mcp"]
+        "args": ["--directory", "/path/to/kakaocloud-openapi-mcp", "run", "kakaocloud-openapi-mcp"]
       }
     }
   }
@@ -151,7 +151,7 @@ Cursor Settings > MCP에서 추가하거나, `.cursor/mcp.json`에:
   "mcpServers": {
     "kakaocloud": {
       "command": "uvx",
-      "args": ["kakaocloud-mcp"]
+      "args": ["kakaocloud-openapi-mcp"]
     }
   }
 }
@@ -163,7 +163,7 @@ Cursor Settings > MCP에서 추가하거나, `.cursor/mcp.json`에:
   "mcpServers": {
     "kakaocloud": {
       "command": "uv",
-      "args": ["--directory", "/path/to/kakaocloud-openapi-mcp", "run", "kakaocloud-mcp"]
+      "args": ["--directory", "/path/to/kakaocloud-openapi-mcp", "run", "kakaocloud-openapi-mcp"]
     }
   }
 }
@@ -514,7 +514,7 @@ MCP Inspector가 브라우저에서 열리며, 각 도구를 직접 호출하고
 ### 서버 직접 실행
 
 ```bash
-uv run kakaocloud-mcp
+uv run kakaocloud-openapi-mcp
 ```
 
 서버는 stdio 모드로 동작하므로, MCP 클라이언트가 stdin/stdout을 통해 통신합니다.

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from kakaocloud_mcp.data.loader import get_store
-from kakaocloud_mcp.utils.search import search
+from kakaocloud_openapi_mcp.data.loader import get_store
+from kakaocloud_openapi_mcp.utils.search import search
 
 
 def search_kakaocloud_api(query: str) -> str:

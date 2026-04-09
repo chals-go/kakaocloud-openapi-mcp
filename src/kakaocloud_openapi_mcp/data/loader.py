@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from kakaocloud_mcp.utils.search import SearchEntry
+from kakaocloud_openapi_mcp.utils.search import SearchEntry
 
 DATA_DIR = Path(__file__).parent
 SERVICES_DIR = DATA_DIR / "services"

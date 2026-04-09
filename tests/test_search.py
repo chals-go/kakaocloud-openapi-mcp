@@ -1,7 +1,7 @@
 """검색 유틸리티 및 데이터 로더 테스트."""
 
-from kakaocloud_mcp.data.loader import get_store
-from kakaocloud_mcp.utils.search import SearchEntry, search
+from kakaocloud_openapi_mcp.data.loader import get_store
+from kakaocloud_openapi_mcp.utils.search import SearchEntry, search
 
 
 def test_search_korean_keyword():

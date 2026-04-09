@@ -1,5 +1,5 @@
 [project]
-name = "kakaocloud-mcp"
+name = "kakaocloud-openapi-mcp"
 version = "0.1.0"
 description = "KakaoCloud OpenAPI MCP server - AI 코딩 어시스턴트를 위한 카카오클라우드 API 문서 제공"
 readme = "README.md"
@@ -27,7 +27,7 @@ Repository = "https://github.com/chals-go/kakaocloud-openapi-mcp"
 Issues = "https://github.com/chals-go/kakaocloud-openapi-mcp/issues"
 
 [project.scripts]
-kakaocloud-mcp = "kakaocloud_mcp.server:main"
+kakaocloud-openapi-mcp = "kakaocloud_openapi_mcp.server:main"
 
 [build-system]
 requires = ["uv_build>=0.11.3,<0.12.0"]

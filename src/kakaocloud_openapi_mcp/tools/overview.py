@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from kakaocloud_mcp.data.loader import get_store
+from kakaocloud_openapi_mcp.data.loader import get_store
 
 
 def get_service_overview(service: str) -> str:

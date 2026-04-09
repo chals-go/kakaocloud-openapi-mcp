@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from kakaocloud_mcp.data.loader import get_store
-from kakaocloud_mcp.utils.search import SearchEntry, search
+from kakaocloud_openapi_mcp.data.loader import get_store
+from kakaocloud_openapi_mcp.utils.search import SearchEntry, search
 
 
 def get_workflow(task: str) -> str:

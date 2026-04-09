@@ -1,10 +1,10 @@
 """MCP Tool 함수 테스트."""
 
-from kakaocloud_mcp.tools.search import search_kakaocloud_api
-from kakaocloud_mcp.tools.detail import get_api_detail
-from kakaocloud_mcp.tools.overview import get_service_overview
-from kakaocloud_mcp.tools.workflow import get_workflow
-from kakaocloud_mcp.tools.auth import get_auth_guide
+from kakaocloud_openapi_mcp.tools.search import search_kakaocloud_api
+from kakaocloud_openapi_mcp.tools.detail import get_api_detail
+from kakaocloud_openapi_mcp.tools.overview import get_service_overview
+from kakaocloud_openapi_mcp.tools.workflow import get_workflow
+from kakaocloud_openapi_mcp.tools.auth import get_auth_guide
 
 
 def test_search_tool():
