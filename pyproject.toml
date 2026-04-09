@@ -3,13 +3,28 @@ name = "kakaocloud-mcp"
 version = "0.1.0"
 description = "KakaoCloud OpenAPI MCP server - AI 코딩 어시스턴트를 위한 카카오클라우드 API 문서 제공"
 readme = "README.md"
+license = "MIT"
 authors = [
-    { name = "chals.chu", email = "chals.chu@outlook.com" }
+    { name = "chals-go" }
 ]
 requires-python = ">=3.12"
+keywords = ["kakaocloud", "mcp", "openapi", "cloud", "ai"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+]
 dependencies = [
     "mcp[cli]>=1.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/chals-go/kakaocloud-openapi-mcp"
+Repository = "https://github.com/chals-go/kakaocloud-openapi-mcp"
+Issues = "https://github.com/chals-go/kakaocloud-openapi-mcp/issues"
 
 [project.scripts]
 kakaocloud-mcp = "kakaocloud_mcp.server:main"

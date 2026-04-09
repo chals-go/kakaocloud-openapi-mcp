@@ -36,7 +36,23 @@ AI → 인증 방법 포함한 완전한 파이썬 스크립트 생성
 - Python 3.12+
 - [uv](https://docs.astral.sh/uv/) (Python 패키지 매니저)
 
-### 설치 방법
+### 방법 1: PyPI에서 설치 (추천)
+
+별도 클론 없이 바로 사용할 수 있습니다.
+
+```bash
+# uv가 없다면 먼저 설치
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+설치 확인:
+```bash
+uvx kakaocloud-mcp --help
+```
+
+### 방법 2: GitHub에서 설치
+
+소스코드를 직접 받아서 사용하거나 수정하고 싶을 때 사용합니다.
 
 ```bash
 # 저장소 클론
@@ -51,27 +67,33 @@ uv sync
 
 ### Claude Code (CLI)
 
+**PyPI 설치 (추천):**
 ```bash
-claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run kakaocloud-mcp
+claude mcp add kakaocloud -- uvx kakaocloud-mcp
 ```
 
-또는 설정 파일에 직접 추가:
-
-```json
-{
-  "mcpServers": {
-    "kakaocloud": {
-      "command": "uv",
-      "args": ["--directory", "/path/to/kakaocloud-openapi-mcp", "run", "kakaocloud-mcp"]
-    }
-  }
-}
+**GitHub 설치:**
+```bash
+claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run kakaocloud-mcp
 ```
 
 ### Claude Desktop
 
 `claude_desktop_config.json` 파일에 추가:
 
+**PyPI 설치 (추천):**
+```json
+{
+  "mcpServers": {
+    "kakaocloud": {
+      "command": "uvx",
+      "args": ["kakaocloud-mcp"]
+    }
+  }
+}
+```
+
+**GitHub 설치:**
 ```json
 {
   "mcpServers": {
@@ -91,6 +113,21 @@ claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run 
 
 `.vscode/settings.json`에 추가:
 
+**PyPI 설치 (추천):**
+```json
+{
+  "mcp": {
+    "servers": {
+      "kakaocloud": {
+        "command": "uvx",
+        "args": ["kakaocloud-mcp"]
+      }
+    }
+  }
+}
+```
+
+**GitHub 설치:**
 ```json
 {
   "mcp": {
@@ -108,6 +145,19 @@ claude mcp add kakaocloud -- uv --directory /path/to/kakaocloud-openapi-mcp run 
 
 Cursor Settings > MCP에서 추가하거나, `.cursor/mcp.json`에:
 
+**PyPI 설치 (추천):**
+```json
+{
+  "mcpServers": {
+    "kakaocloud": {
+      "command": "uvx",
+      "args": ["kakaocloud-mcp"]
+    }
+  }
+}
+```
+
+**GitHub 설치:**
 ```json
 {
   "mcpServers": {
