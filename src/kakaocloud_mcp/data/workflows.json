@@ -1,0 +1,280 @@
+{
+  "workflows": [
+    {
+      "id": "create-vm",
+      "name": "Create VM Instance",
+      "nameKo": "VM 인스턴스 생성",
+      "description": "카카오클라우드에서 VM 인스턴스를 생성하는 전체 흐름입니다. VPC, 서브넷, 보안 그룹, 키페어를 먼저 준비한 후 인스턴스를 생성합니다.",
+      "keywords": ["vm 만들기", "vm 생성", "인스턴스 생성", "서버 만들기", "create vm", "create instance", "가상머신 만들기"],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Get auth token",
+          "actionKo": "인증 토큰 발급",
+          "service": "iam",
+          "endpoint": "",
+          "method": "POST",
+          "path": "https://iam.kakaocloud.com/identity/v3/auth/tokens",
+          "note": "Access Key ID와 Secret Key로 토큰을 발급받습니다.",
+          "outputUsedBy": [2, 3, 4, 5, 6]
+        },
+        {
+          "order": 2,
+          "action": "Create or get existing VPC",
+          "actionKo": "VPC 생성 또는 기존 VPC 조회",
+          "service": "bns-vpc",
+          "endpoint": "create-vpc",
+          "method": "POST",
+          "path": "/vpcs",
+          "note": "기존 VPC가 있으면 GET /vpcs로 조회하여 사용",
+          "outputUsedBy": [3, 4]
+        },
+        {
+          "order": 3,
+          "action": "Create or get existing Subnet",
+          "actionKo": "서브넷 생성 또는 기존 서브넷 조회",
+          "service": "bns-vpc",
+          "endpoint": "create-subnet",
+          "method": "POST",
+          "path": "/subnets",
+          "note": "기존 서브넷이 있으면 GET /subnets로 조회. VPC ID 필요",
+          "outputUsedBy": [6]
+        },
+        {
+          "order": 4,
+          "action": "Create Security Group",
+          "actionKo": "보안 그룹 생성 및 규칙 추가",
+          "service": "bns-vpc",
+          "endpoint": "create-security-group",
+          "method": "POST",
+          "path": "/security-groups",
+          "note": "SSH(22), HTTP(80) 등 필요한 포트를 인바운드 규칙으로 추가",
+          "outputUsedBy": [6]
+        },
+        {
+          "order": 5,
+          "action": "Create Key Pair",
+          "actionKo": "SSH 키페어 생성",
+          "service": "bcs",
+          "endpoint": "create-keypair",
+          "method": "POST",
+          "path": "/keypairs",
+          "note": "이미 키페어가 있으면 생략 가능. 생성 시 private key를 반드시 저장",
+          "outputUsedBy": [6]
+        },
+        {
+          "order": 6,
+          "action": "Create VM Instance",
+          "actionKo": "VM 인스턴스 생성",
+          "service": "bcs",
+          "endpoint": "create-instance",
+          "method": "POST",
+          "path": "/instances",
+          "note": "image_id는 GET /images로 사용 가능한 이미지를 먼저 조회. flavor는 GET /flavors로 조회"
+        }
+      ]
+    },
+    {
+      "id": "create-vpc-network",
+      "name": "Create VPC Network",
+      "nameKo": "VPC 네트워크 구성",
+      "description": "VPC, 서브넷, 보안 그룹, 라우팅 테이블을 포함한 전체 네트워크를 구성합니다.",
+      "keywords": ["vpc 구성", "네트워크 구성", "vpc 만들기", "네트워크 설정", "create vpc", "network setup"],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Get auth token",
+          "actionKo": "인증 토큰 발급",
+          "service": "iam",
+          "endpoint": "",
+          "method": "POST",
+          "path": "https://iam.kakaocloud.com/identity/v3/auth/tokens",
+          "outputUsedBy": [2, 3, 4]
+        },
+        {
+          "order": 2,
+          "action": "Create VPC",
+          "actionKo": "VPC 생성",
+          "service": "bns-vpc",
+          "endpoint": "create-vpc",
+          "method": "POST",
+          "path": "/vpcs",
+          "note": "CIDR 블록을 설정 (예: 10.0.0.0/16)",
+          "outputUsedBy": [3, 4]
+        },
+        {
+          "order": 3,
+          "action": "Create Subnet(s)",
+          "actionKo": "서브넷 생성 (1개 이상)",
+          "service": "bns-vpc",
+          "endpoint": "create-subnet",
+          "method": "POST",
+          "path": "/subnets",
+          "note": "용도별로 여러 서브넷 생성 가능 (public/private)"
+        },
+        {
+          "order": 4,
+          "action": "Create Security Group and Rules",
+          "actionKo": "보안 그룹 및 규칙 생성",
+          "service": "bns-vpc",
+          "endpoint": "create-security-group",
+          "method": "POST",
+          "path": "/security-groups",
+          "note": "보안 그룹 생성 후 POST /security-groups/{id}/rules로 규칙 추가"
+        }
+      ]
+    },
+    {
+      "id": "setup-load-balancer",
+      "name": "Setup Load Balancer",
+      "nameKo": "로드 밸런서 설정",
+      "description": "로드 밸런서를 생성하고 대상 그룹과 리스너를 설정하여 트래픽을 분산합니다.",
+      "keywords": ["로드밸런서 설정", "lb 설정", "부하분산 설정", "load balancer setup"],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Get auth token",
+          "actionKo": "인증 토큰 발급",
+          "service": "iam",
+          "endpoint": "",
+          "method": "POST",
+          "path": "https://iam.kakaocloud.com/identity/v3/auth/tokens",
+          "outputUsedBy": [2, 3, 4, 5]
+        },
+        {
+          "order": 2,
+          "action": "Create Target Group",
+          "actionKo": "대상 그룹 생성",
+          "service": "bns-load-balancer",
+          "endpoint": "create-target-group",
+          "method": "POST",
+          "path": "/target-groups",
+          "note": "VPC ID 필요. 프로토콜과 포트 설정",
+          "outputUsedBy": [4, 5]
+        },
+        {
+          "order": 3,
+          "action": "Register Targets",
+          "actionKo": "대상 인스턴스 등록",
+          "service": "bns-load-balancer",
+          "endpoint": "register-target",
+          "method": "POST",
+          "path": "/target-groups/:target_group_id/targets",
+          "note": "트래픽을 받을 인스턴스들을 등록"
+        },
+        {
+          "order": 4,
+          "action": "Create Load Balancer",
+          "actionKo": "로드 밸런서 생성",
+          "service": "bns-load-balancer",
+          "endpoint": "create-load-balancer",
+          "method": "POST",
+          "path": "/load-balancers",
+          "note": "VPC ID와 서브넷 ID 필요",
+          "outputUsedBy": [5]
+        },
+        {
+          "order": 5,
+          "action": "Create Listener",
+          "actionKo": "리스너 생성",
+          "service": "bns-load-balancer",
+          "endpoint": "create-listener",
+          "method": "POST",
+          "path": "/load-balancers/:load_balancer_id/listeners",
+          "note": "리스닝 프로토콜/포트와 대상 그룹 연결"
+        }
+      ]
+    },
+    {
+      "id": "create-k8s-cluster",
+      "name": "Create Kubernetes Cluster",
+      "nameKo": "Kubernetes 클러스터 생성",
+      "description": "관리형 Kubernetes 클러스터를 생성하고 노드 풀을 구성합니다.",
+      "keywords": ["k8s 생성", "kubernetes 만들기", "클러스터 생성", "컨테이너 클러스터"],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Get auth token",
+          "actionKo": "인증 토큰 발급",
+          "service": "iam",
+          "endpoint": "",
+          "method": "POST",
+          "path": "https://iam.kakaocloud.com/identity/v3/auth/tokens",
+          "outputUsedBy": [2, 3, 4]
+        },
+        {
+          "order": 2,
+          "action": "Prepare VPC and Subnet",
+          "actionKo": "VPC 및 서브넷 준비",
+          "service": "bns-vpc",
+          "endpoint": "create-vpc",
+          "method": "POST",
+          "path": "/vpcs",
+          "note": "기존 VPC/서브넷이 있으면 조회하여 사용",
+          "outputUsedBy": [3]
+        },
+        {
+          "order": 3,
+          "action": "Create Kubernetes Cluster",
+          "actionKo": "Kubernetes 클러스터 생성",
+          "service": "container-pack",
+          "endpoint": "create-cluster",
+          "method": "POST",
+          "path": "/clusters",
+          "note": "VPC ID와 서브넷 ID, Kubernetes 버전 필요",
+          "outputUsedBy": [4]
+        },
+        {
+          "order": 4,
+          "action": "Create Node Pool",
+          "actionKo": "노드 풀 생성",
+          "service": "container-pack",
+          "endpoint": "create-node-pool",
+          "method": "POST",
+          "path": "/clusters/:cluster_id/node-pools",
+          "note": "워커 노드의 인스턴스 타입과 수를 지정"
+        }
+      ]
+    },
+    {
+      "id": "create-mysql-db",
+      "name": "Create MySQL Database",
+      "nameKo": "MySQL 데이터베이스 생성",
+      "description": "관리형 MySQL 데이터베이스 인스턴스를 생성합니다.",
+      "keywords": ["mysql 만들기", "db 생성", "데이터베이스 만들기", "rds 생성"],
+      "steps": [
+        {
+          "order": 1,
+          "action": "Get auth token",
+          "actionKo": "인증 토큰 발급",
+          "service": "iam",
+          "endpoint": "",
+          "method": "POST",
+          "path": "https://iam.kakaocloud.com/identity/v3/auth/tokens",
+          "outputUsedBy": [2, 3]
+        },
+        {
+          "order": 2,
+          "action": "Prepare VPC and Subnet",
+          "actionKo": "VPC 및 서브넷 준비",
+          "service": "bns-vpc",
+          "endpoint": "create-vpc",
+          "method": "POST",
+          "path": "/vpcs",
+          "note": "기존 VPC/서브넷이 있으면 조회하여 사용",
+          "outputUsedBy": [3]
+        },
+        {
+          "order": 3,
+          "action": "Create MySQL Instance",
+          "actionKo": "MySQL 인스턴스 생성",
+          "service": "data-store-mysql",
+          "endpoint": "create-db-instance",
+          "method": "POST",
+          "path": "/db-instances",
+          "note": "MySQL 버전, 인스턴스 타입, 스토리지 크기, 마스터 계정 정보 필요"
+        }
+      ]
+    }
+  ]
+}

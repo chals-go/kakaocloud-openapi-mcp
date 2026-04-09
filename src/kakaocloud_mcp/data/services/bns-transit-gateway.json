@@ -1,0 +1,73 @@
+{
+  "id": "bns-transit-gateway",
+  "name": "Transit Gateway",
+  "nameKo": "트랜짓 게이트웨이",
+  "description": "여러 VPC 간 네트워크를 연결하는 트랜짓 게이트웨이 서비스입니다.",
+  "baseUrl": "https://bns.kr-central-2.kakaocloud.com",
+  "basePath": "/api/v1",
+  "keywords": ["transit gateway", "트랜짓 게이트웨이", "tgw", "vpc 연결", "vpc peering"],
+  "dependencies": ["bns-vpc"],
+  "endpoints": [
+    {
+      "id": "create-transit-gateway",
+      "method": "POST",
+      "path": "/transit-gateways",
+      "summary": "트랜짓 게이트웨이 생성",
+      "summaryKo": "트랜짓 게이트웨이 생성",
+      "keywords": ["tgw 생성", "트랜짓 게이트웨이 생성", "create transit gateway"],
+      "parameters": [],
+      "requestBody": {
+        "name": {"type": "string", "required": true, "description": "트랜짓 게이트웨이 이름"}
+      },
+      "responses": {
+        "201": {"description": "트랜짓 게이트웨이 생성 완료"}
+      }
+    },
+    {
+      "id": "list-transit-gateways",
+      "method": "GET",
+      "path": "/transit-gateways",
+      "summary": "트랜짓 게이트웨이 목록 조회",
+      "summaryKo": "트랜짓 게이트웨이 목록 조회",
+      "keywords": ["tgw 목록", "list transit gateways"],
+      "parameters": [],
+      "requestBody": null,
+      "responses": {
+        "200": {"description": "트랜짓 게이트웨이 목록 반환"}
+      }
+    },
+    {
+      "id": "delete-transit-gateway",
+      "method": "DELETE",
+      "path": "/transit-gateways/:transit_gateway_id",
+      "summary": "트랜짓 게이트웨이 삭제",
+      "summaryKo": "트랜짓 게이트웨이 삭제",
+      "keywords": ["tgw 삭제", "delete transit gateway"],
+      "parameters": [
+        {"name": "transit_gateway_id", "in": "path", "type": "string", "required": true, "description": "트랜짓 게이트웨이 ID"}
+      ],
+      "requestBody": null,
+      "responses": {
+        "204": {"description": "삭제 완료"}
+      }
+    },
+    {
+      "id": "create-tgw-attachment",
+      "method": "POST",
+      "path": "/transit-gateways/:transit_gateway_id/attachments",
+      "summary": "VPC 연결",
+      "summaryKo": "트랜짓 게이트웨이에 VPC 연결",
+      "keywords": ["vpc 연결", "tgw attachment", "vpc 피어링"],
+      "parameters": [
+        {"name": "transit_gateway_id", "in": "path", "type": "string", "required": true, "description": "트랜짓 게이트웨이 ID"}
+      ],
+      "requestBody": {
+        "vpc_id": {"type": "string", "required": true, "description": "연결할 VPC ID"},
+        "subnet_ids": {"type": "array", "required": true, "description": "연결할 서브넷 ID 배열"}
+      },
+      "responses": {
+        "201": {"description": "VPC 연결 완료"}
+      }
+    }
+  ]
+}

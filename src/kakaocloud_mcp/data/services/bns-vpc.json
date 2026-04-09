@@ -1,0 +1,436 @@
+{
+  "id": "bns-vpc",
+  "name": "VPC",
+  "nameKo": "Virtual Private Cloud",
+  "description": "카카오클라우드의 가상 네트워크 서비스. VPC, 서브넷, 보안 그룹, 라우팅 테이블 등을 관리합니다.",
+  "baseUrl": "https://bns.kr-central-2.kakaocloud.com",
+  "basePath": "/api/v1",
+  "keywords": ["vpc", "네트워크", "network", "서브넷", "subnet", "보안그룹", "security group", "라우팅", "routing"],
+  "dependencies": [],
+  "endpoints": [
+    {
+      "id": "create-vpc",
+      "method": "POST",
+      "path": "/vpcs",
+      "summary": "VPC 생성",
+      "summaryKo": "VPC 생성",
+      "description": "새 Virtual Private Cloud를 생성합니다.",
+      "keywords": ["vpc 생성", "네트워크 생성", "create vpc"],
+      "parameters": [],
+      "requestBody": {
+        "name": {"type": "string", "required": true, "description": "VPC 이름"},
+        "cidr_block": {"type": "string", "required": true, "description": "VPC CIDR 블록 (예: 10.0.0.0/16)"}
+      },
+      "exampleRequest": {
+        "name": "my-vpc",
+        "cidr_block": "10.0.0.0/16"
+      },
+      "responses": {
+        "201": {"description": "VPC 생성 완료"}
+      }
+    },
+    {
+      "id": "list-vpcs",
+      "method": "GET",
+      "path": "/vpcs",
+      "summary": "VPC 목록 조회",
+      "summaryKo": "VPC 목록 조회",
+      "keywords": ["vpc 목록", "list vpcs"],
+      "parameters": [],
+      "requestBody": null,
+      "responses": {
+        "200": {"description": "VPC 목록 반환"}
+      }
+    },
+    {
+      "id": "get-vpc",
+      "method": "GET",
+      "path": "/vpcs/:vpc_id",
+      "summary": "VPC 상세 조회",
+      "summaryKo": "VPC 상세 조회",
+      "keywords": ["vpc 조회", "vpc 상세"],
+      "parameters": [
+        {"name": "vpc_id", "in": "path", "type": "string", "required": true, "description": "VPC ID"}
+      ],
+      "requestBody": null,
+      "responses": {
+        "200": {"description": "VPC 상세 정보 반환"}
+      }
+    },
+    {
+      "id": "delete-vpc",
+      "method": "DELETE",
+      "path": "/vpcs/:vpc_id",
+      "summary": "VPC 삭제",
+      "summaryKo": "VPC 삭제",
+      "keywords": ["vpc 삭제", "delete vpc"],
+      "parameters": [
+        {"name": "vpc_id", "in": "path", "type": "string", "required": true, "description": "VPC ID"}
+      ],
+      "requestBody": null,
+      "responses": {
+        "204": {"description": "VPC 삭제 완료"}
+      }
+    },
+    {
+      "id": "create-subnet",
+      "method": "POST",
+      "path": "/subnets",
+      "summary": "서브넷 생성",
+      "summaryKo": "서브넷 생성",
+      "description": "VPC 내에 서브넷을 생성합니다.",
+      "keywords": ["서브넷 생성", "subnet 생성", "create subnet"],
+      "parameters": [],
+      "requestBody": {
+        "name": {"type": "string", "required": true, "description": "서브넷 이름"},
+        "vpc_id": {"type": "string", "required": true, "description": "VPC ID"},
+        "cidr_block": {"type": "string", "required": true, "description": "서브넷 CIDR 블록 (예: 10.0.1.0/24)"},
+        "availability_zone": {"type": "string", "required": false, "description": "가용 영역"}
+      },
+      "exampleRequest": {
+        "name": "my-subnet",
+        "vpc_id": "VPC_ID",
+        "cidr_block": "10.0.1.0/24"
+      },
+      "responses": {
+        "201": {"description": "서브넷 생성 완료"}
+      }
+    },
+    {
+      "id": "list-subnets",
+      "method": "GET",
+      "path": "/subnets",
+      "summary": "서브넷 목록 조회",
+      "summaryKo": "서브넷 목록 조회",
+      "keywords": ["서브넷 목록", "list subnets"],
+      "parameters": [],
+      "requestBody": null,
+      "responses": {
+        "200": {"description": "서브넷 목록 반환"}
+      }
+    },
+    {
+      "id": "delete-subnet",
+      "method": "DELETE",
+      "path": "/subnets/:subnet_id",
+      "summary": "서브넷 삭제",
+      "summaryKo": "서브넷 삭제",
+      "keywords": ["서브넷 삭제", "delete subnet"],
+      "parameters": [
+        {"name": "subnet_id", "in": "path", "type": "string", "required": true, "description": "서브넷 ID"}
+      ],
+      "requestBody": null,
+      "responses": {
+        "204": {"description": "서브넷 삭제 완료"}
+      }
+    },
+    {
+      "id": "create-security-group",
+      "method": "POST",
+      "path": "/security-groups",
+      "summary": "보안 그룹 생성",
+      "summaryKo": "보안 그룹 생성",
+      "description": "새 보안 그룹을 생성합니다.",
+      "keywords": ["보안그룹 생성", "보안 그룹 생성", "security group 생성", "create security group", "방화벽"],
+      "parameters": [],
+      "requestBody": {
+        "name": {"type": "string", "required": true, "description": "보안 그룹 이름"},
+        "vpc_id": {"type": "string", "required": true, "description": "VPC ID"},
+        "description": {"type": "string", "required": false, "description": "보안 그룹 설명"}
+      },
+      "exampleRequest": {
+        "name": "my-sg",
+        "vpc_id": "VPC_ID",
+        "description": "Web server security group"
+      },
+      "responses": {
+        "201": {"description": "보안 그룹 생성 완료"}
+      }
+    },
+    {
+      "id": "list-security-groups",
+      "method": "GET",
+      "path": "/security-groups",
+      "summary": "보안 그룹 목록 조회",
+      "summaryKo": "보안 그룹 목록 조회",
+      "keywords": ["보안그룹 목록", "보안 그룹 목록", "list security groups"],
+      "parameters": [],
+      "requestBody": null,
+      "responses": {
+        "200": {"description": "보안 그룹 목록 반환"}
+      }
+    },
+    {
+      "id": "delete-security-group",
+      "method": "DELETE",
+      "path": "/security-groups/:security_group_id",
+      "summary": "보안 그룹 삭제",
+      "summaryKo": "보안 그룹 삭제",
+      "keywords": ["보안그룹 삭제", "delete security group"],
+      "parameters": [
+        {"name": "security_group_id", "in": "path", "type": "string", "required": true, "description": "보안 그룹 ID"}
+      ],
+      "requestBody": null,
+      "responses": {
+        "204": {"description": "보안 그룹 삭제 완료"}
+      }
+    },
+    {
+      "id": "create-security-group-rule",
+      "method": "POST",
+      "path": "/security-groups/:security_group_id/rules",
+      "summary": "보안 그룹 규칙 추가",
+      "summaryKo": "보안 그룹 규칙 추가",
+      "description": "보안 그룹에 인바운드/아웃바운드 규칙을 추가합니다.",
+      "keywords": ["보안그룹 규칙", "보안 규칙", "인바운드", "아웃바운드", "security rule", "방화벽 규칙"],
+      "parameters": [
+        {"name": "security_group_id", "in": "path", "type": "string", "required": true, "description": "보안 그룹 ID"}
+      ],
+      "requestBody": {
+        "direction": {"type": "string", "required": true, "description": "규칙 방향 (inbound/outbound)"},
+        "protocol": {"type": "string", "required": true, "description": "프로토콜 (tcp/udp/icmp)"},
+        "port_range_min": {"type": "integer", "required": false, "description": "최소 포트 번호"},
+        "port_range_max": {"type": "integer", "required": false, "description": "최대 포트 번호"},
+        "remote_ip_prefix": {"type": "string", "required": false, "description": "원격 IP 대역 (예: 0.0.0.0/0)"}
+      },
+      "exampleRequest": {
+        "direction": "inbound",
+        "protocol": "tcp",
+        "port_range_min": 22,
+        "port_range_max": 22,
+        "remote_ip_prefix": "0.0.0.0/0"
+      },
+      "responses": {
+        "201": {"description": "보안 그룹 규칙 추가 완료"}
+      }
+    },
+    {
+      "id": "get-security-group",
+      "method": "GET",
+      "path": "/security-groups/:security_group_id",
+      "summary": "보안 그룹 상세 조회",
+      "summaryKo": "보안 그룹 상세 조회",
+      "keywords": ["보안그룹 상세", "security group 조회"],
+      "parameters": [
+        {"name": "security_group_id", "in": "path", "type": "string", "required": true, "description": "보안 그룹 ID"}
+      ],
+      "requestBody": null,
+      "responses": {"200": {"description": "보안 그룹 상세 정보 반환"}}
+    },
+    {
+      "id": "update-security-group",
+      "method": "PUT",
+      "path": "/security-groups/:security_group_id",
+      "summary": "보안 그룹 수정",
+      "summaryKo": "보안 그룹 이름/설명 수정",
+      "keywords": ["보안그룹 수정", "update security group"],
+      "parameters": [
+        {"name": "security_group_id", "in": "path", "type": "string", "required": true, "description": "보안 그룹 ID"}
+      ],
+      "requestBody": {
+        "name": {"type": "string", "required": false, "description": "보안 그룹 이름"},
+        "description": {"type": "string", "required": false, "description": "보안 그룹 설명"}
+      },
+      "responses": {"200": {"description": "보안 그룹 수정 완료"}}
+    },
+    {
+      "id": "delete-security-group-rule",
+      "method": "DELETE",
+      "path": "/security-groups/:security_group_id/rules/:security_group_rule_id",
+      "summary": "보안 그룹 규칙 삭제",
+      "summaryKo": "보안 그룹 규칙 삭제",
+      "keywords": ["보안그룹 규칙 삭제", "security rule delete"],
+      "parameters": [
+        {"name": "security_group_id", "in": "path", "type": "string", "required": true, "description": "보안 그룹 ID"},
+        {"name": "security_group_rule_id", "in": "path", "type": "string", "required": true, "description": "규칙 ID"}
+      ],
+      "requestBody": null,
+      "responses": {"204": {"description": "보안 그룹 규칙 삭제 완료"}}
+    },
+    {
+      "id": "get-subnet",
+      "method": "GET",
+      "path": "/subnets/:subnet_id",
+      "summary": "서브넷 상세 조회",
+      "summaryKo": "서브넷 상세 조회",
+      "keywords": ["서브넷 상세", "subnet 조회"],
+      "parameters": [
+        {"name": "subnet_id", "in": "path", "type": "string", "required": true, "description": "서브넷 ID"}
+      ],
+      "requestBody": null,
+      "responses": {"200": {"description": "서브넷 상세 정보 반환"}}
+    },
+    {
+      "id": "update-subnet",
+      "method": "PUT",
+      "path": "/subnets/:subnet_id",
+      "summary": "서브넷 수정",
+      "summaryKo": "서브넷 이름 수정",
+      "keywords": ["서브넷 수정", "update subnet"],
+      "parameters": [
+        {"name": "subnet_id", "in": "path", "type": "string", "required": true, "description": "서브넷 ID"}
+      ],
+      "requestBody": {
+        "name": {"type": "string", "required": true, "description": "서브넷 이름"}
+      },
+      "responses": {"200": {"description": "서브넷 수정 완료"}}
+    },
+    {
+      "id": "create-route-table",
+      "method": "POST",
+      "path": "/route-tables",
+      "summary": "라우트 테이블 생성",
+      "summaryKo": "라우트 테이블 생성",
+      "keywords": ["라우트 테이블", "route table", "라우팅 테이블", "라우팅"],
+      "parameters": [],
+      "requestBody": {
+        "name": {"type": "string", "required": true, "description": "라우트 테이블 이름"},
+        "vpc_id": {"type": "string", "required": true, "description": "VPC ID"}
+      },
+      "responses": {"201": {"description": "라우트 테이블 생성 완료"}}
+    },
+    {
+      "id": "list-route-tables",
+      "method": "GET",
+      "path": "/route-tables",
+      "summary": "라우트 테이블 목록 조회",
+      "summaryKo": "라우트 테이블 목록 조회",
+      "keywords": ["라우트 테이블 목록", "list route tables"],
+      "parameters": [],
+      "requestBody": null,
+      "responses": {"200": {"description": "라우트 테이블 목록 반환"}}
+    },
+    {
+      "id": "delete-route-table",
+      "method": "DELETE",
+      "path": "/route-tables/:route_table_id",
+      "summary": "라우트 테이블 삭제",
+      "summaryKo": "라우트 테이블 삭제",
+      "keywords": ["라우트 테이블 삭제", "delete route table"],
+      "parameters": [
+        {"name": "route_table_id", "in": "path", "type": "string", "required": true, "description": "라우트 테이블 ID"}
+      ],
+      "requestBody": null,
+      "responses": {"204": {"description": "라우트 테이블 삭제 완료. 기본 라우트 테이블은 삭제 불가"}}
+    },
+    {
+      "id": "add-route",
+      "method": "POST",
+      "path": "/route-tables/:route_table_id/routes",
+      "summary": "라우트 추가",
+      "summaryKo": "라우트 테이블에 라우트 추가",
+      "keywords": ["라우트 추가", "add route", "라우팅 규칙"],
+      "parameters": [
+        {"name": "route_table_id", "in": "path", "type": "string", "required": true, "description": "라우트 테이블 ID"}
+      ],
+      "requestBody": {
+        "destination": {"type": "string", "required": true, "description": "목적지 CIDR"},
+        "target": {"type": "string", "required": true, "description": "대상 리소스 ID"}
+      },
+      "responses": {"201": {"description": "라우트 추가 완료"}}
+    },
+    {
+      "id": "delete-route",
+      "method": "DELETE",
+      "path": "/route-tables/:route_table_id/routes/:route_id",
+      "summary": "라우트 삭제",
+      "summaryKo": "라우트 삭제",
+      "keywords": ["라우트 삭제", "delete route"],
+      "parameters": [
+        {"name": "route_table_id", "in": "path", "type": "string", "required": true, "description": "라우트 테이블 ID"},
+        {"name": "route_id", "in": "path", "type": "string", "required": true, "description": "라우트 ID"}
+      ],
+      "requestBody": null,
+      "responses": {"204": {"description": "라우트 삭제 완료"}}
+    },
+    {
+      "id": "create-network-interface",
+      "method": "POST",
+      "path": "/network-interfaces",
+      "summary": "네트워크 인터페이스 생성",
+      "summaryKo": "네트워크 인터페이스 생성",
+      "keywords": ["네트워크 인터페이스 생성", "NIC 생성", "create network interface"],
+      "parameters": [],
+      "requestBody": {
+        "name": {"type": "string", "required": true, "description": "네트워크 인터페이스 이름"},
+        "subnet_id": {"type": "string", "required": true, "description": "서브넷 ID"}
+      },
+      "responses": {"201": {"description": "네트워크 인터페이스 생성 완료"}}
+    },
+    {
+      "id": "list-network-interfaces",
+      "method": "GET",
+      "path": "/network-interfaces",
+      "summary": "네트워크 인터페이스 목록 조회",
+      "summaryKo": "네트워크 인터페이스 목록 조회",
+      "keywords": ["네트워크 인터페이스 목록", "NIC 목록"],
+      "parameters": [],
+      "requestBody": null,
+      "responses": {"200": {"description": "네트워크 인터페이스 목록 반환"}}
+    },
+    {
+      "id": "delete-network-interface",
+      "method": "DELETE",
+      "path": "/network-interfaces/:network_interface_id",
+      "summary": "네트워크 인터페이스 삭제",
+      "summaryKo": "네트워크 인터페이스 삭제",
+      "keywords": ["네트워크 인터페이스 삭제", "NIC 삭제"],
+      "parameters": [
+        {"name": "network_interface_id", "in": "path", "type": "string", "required": true, "description": "네트워크 인터페이스 ID"}
+      ],
+      "requestBody": null,
+      "responses": {"204": {"description": "네트워크 인터페이스 삭제 완료. Available 상태여야 함"}}
+    },
+    {
+      "id": "create-public-ip",
+      "method": "POST",
+      "path": "/public-ips",
+      "summary": "공인 IP 생성",
+      "summaryKo": "공인 IP 생성",
+      "keywords": ["공인 ip 생성", "public ip 생성", "퍼블릭 ip"],
+      "parameters": [],
+      "requestBody": {
+        "description": {"type": "string", "required": false, "description": "공인 IP 설명"}
+      },
+      "responses": {"201": {"description": "공인 IP 생성 완료"}}
+    },
+    {
+      "id": "list-public-ips",
+      "method": "GET",
+      "path": "/public-ips",
+      "summary": "공인 IP 목록 조회",
+      "summaryKo": "공인 IP 목록 조회",
+      "keywords": ["공인 ip 목록", "public ip 목록"],
+      "parameters": [],
+      "requestBody": null,
+      "responses": {"200": {"description": "공인 IP 목록 반환"}}
+    },
+    {
+      "id": "delete-public-ip",
+      "method": "DELETE",
+      "path": "/public-ips/:public_ip_id",
+      "summary": "공인 IP 삭제",
+      "summaryKo": "공인 IP 삭제",
+      "keywords": ["공인 ip 삭제", "public ip 삭제"],
+      "parameters": [
+        {"name": "public_ip_id", "in": "path", "type": "string", "required": true, "description": "공인 IP ID"}
+      ],
+      "requestBody": null,
+      "responses": {"204": {"description": "공인 IP 삭제 완료. 미할당 상태여야 함"}}
+    },
+    {
+      "id": "associate-public-ip-to-nic",
+      "method": "PUT",
+      "path": "/public-ips/:public_ip_id/network-interfaces/:network_interface_id",
+      "summary": "공인 IP를 네트워크 인터페이스에 연결",
+      "summaryKo": "공인 IP를 네트워크 인터페이스에 연결",
+      "keywords": ["공인 ip 연결", "public ip 연결", "ip 할당"],
+      "parameters": [
+        {"name": "public_ip_id", "in": "path", "type": "string", "required": true, "description": "공인 IP ID"},
+        {"name": "network_interface_id", "in": "path", "type": "string", "required": true, "description": "네트워크 인터페이스 ID"}
+      ],
+      "requestBody": null,
+      "responses": {"200": {"description": "공인 IP 연결 완료"}}
+    }
+  ]
+}
