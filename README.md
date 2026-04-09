@@ -199,34 +199,250 @@ MCP 서버는 5개의 도구를 제공합니다. AI 어시스턴트가 자동으
 | `kakaocloud://service/{name}` | 특정 서비스의 전체 API 스펙 (JSON) |
 | `kakaocloud://auth` | 인증 가이드 데이터 (JSON) |
 
-## 사용 예시
+## 실제 사용 예시
 
-### 예시 1: VM 만드는 파이썬 스크립트
+> 아래는 Claude Code에 이 MCP를 연결한 후 실제로 대화한 내용입니다.
 
-AI에게 요청:
-```
-카카오클라우드에서 VM 인스턴스를 만드는 파이썬 스크립트를 작성해줘.
-Ubuntu 이미지를 사용하고, m2a.large 타입으로, SSH 접속이 가능하게 해줘.
-```
+### VM 생성 스크립트 만들기
 
-AI가 MCP를 통해 자동으로:
-1. `get_workflow("VM 인스턴스 생성")` → 전체 API 호출 흐름 파악
-2. `get_auth_guide()` → 인증 코드 작성
-3. `get_api_detail("bcs", "create-instance")` → 필수 파라미터 확인
-4. 완전한 파이썬 스크립트 생성
-
-### 예시 2: VPC 네트워크 구성
+**사용자 요청:**
 
 ```
-카카오클라우드에서 VPC를 만들고, 퍼블릭/프라이빗 서브넷을 구성하는 코드를 작성해줘.
-SSH와 HTTP 포트를 여는 보안 그룹도 포함해줘.
+카카오클라우드에 vm을 만드는 python 스크립트 만들어줘,
+test-vpc, test-subnet1에 만들어주고
+우분투 24.04, 윈도우 2022 두개 만들거고
+vm이름은 test-ubuntu, test-window 로 해줘
+그리고 security group은 test-ubuntu-sg, test-window-sg 로 만들고
+ubuntu 서버는 22port 인바운드, 윈도우서버는 3389 인바운드 설정되게 해줘
 ```
 
-### 예시 3: Kubernetes 클러스터 배포
+**AI가 MCP를 통해 자동으로 수행한 작업:**
+
+1. `get_workflow("VM 인스턴스 생성")` → 인증 → VPC 조회 → 보안 그룹 → 인스턴스 생성 흐름 파악
+2. `get_auth_guide()` → IAM 토큰 발급 코드 작성
+3. `get_api_detail("bns-vpc", "create-security-group")` → 보안 그룹 생성 파라미터 확인
+4. `get_api_detail("bns-vpc", "create-security-group-rule")` → 인바운드 규칙 파라미터 확인
+5. `get_api_detail("bcs", "create-instance")` → VM 생성 필수 파라미터 확인
+
+**AI가 생성한 코드:**
+
+<details>
+<summary><b>create_vms.py</b> (클릭하여 펼치기)</summary>
+
+```python
+"""
+카카오클라우드 VM 생성 스크립트
+- test-vpc / test-subnet1 에 Ubuntu 24.04, Windows 2022 VM 2대 생성
+- 각 VM에 보안 그룹 생성 및 인바운드 규칙 설정
+"""
+
+import os
+import sys
+import requests
+
+# ──────────────────────────────────────────────
+# 설정값 (환경변수 또는 직접 입력)
+# ──────────────────────────────────────────────
+ACCESS_KEY_ID = os.environ.get("KAKAO_ACCESS_KEY_ID", "YOUR_ACCESS_KEY_ID")
+SECRET_KEY = os.environ.get("KAKAO_SECRET_KEY", "YOUR_SECRET_KEY")
+
+UBUNTU_2404_IMAGE_ID = os.environ.get("UBUNTU_2404_IMAGE_ID", "YOUR_UBUNTU_24.04_IMAGE_ID")
+WINDOWS_2022_IMAGE_ID = os.environ.get("WINDOWS_2022_IMAGE_ID", "YOUR_WINDOWS_2022_IMAGE_ID")
+
+KEY_NAME = os.environ.get("KAKAO_KEY_NAME", "YOUR_KEYPAIR_NAME")
+FLAVOR = os.environ.get("KAKAO_FLAVOR", "m2a.large")
+
+# ──────────────────────────────────────────────
+# API 엔드포인트
+# ──────────────────────────────────────────────
+IAM_URL = "https://iam.kakaocloud.com/identity/v3/auth/tokens"
+BNS_BASE = "https://bns.kr-central-2.kakaocloud.com/api/v1"
+BCS_BASE = "https://bcs.kr-central-2.kakaocloud.com/api/v1"
+
+HEADERS = {"Content-Type": "application/json"}
+
+
+def get_token():
+    """IAM 인증 토큰 발급"""
+    payload = {
+        "auth": {
+            "identity": {
+                "methods": ["application_credential"],
+                "application_credential": {
+                    "id": ACCESS_KEY_ID,
+                    "secret": SECRET_KEY,
+                },
+            }
+        }
+    }
+    resp = requests.post(IAM_URL, json=payload, headers=HEADERS)
+    resp.raise_for_status()
+    token = resp.headers["X-Subject-Token"]
+    print("[OK] 토큰 발급 완료")
+    return token
+
+
+def auth_headers(token):
+    return {"X-Auth-Token": token, "Content-Type": "application/json"}
+
+
+def find_vpc(token, name="test-vpc"):
+    """VPC 이름으로 ID 조회"""
+    resp = requests.get(f"{BNS_BASE}/vpcs", headers=auth_headers(token))
+    resp.raise_for_status()
+    for vpc in resp.json().get("vpcs", []):
+        if vpc.get("name") == name:
+            print(f"[OK] VPC 발견: {name} ({vpc['id']})")
+            return vpc["id"]
+    sys.exit(f"[ERROR] VPC '{name}'을 찾을 수 없습니다.")
+
+
+def find_subnet(token, name="test-subnet1"):
+    """서브넷 이름으로 ID 조회"""
+    resp = requests.get(f"{BNS_BASE}/subnets", headers=auth_headers(token))
+    resp.raise_for_status()
+    for subnet in resp.json().get("subnets", []):
+        if subnet.get("name") == name:
+            print(f"[OK] Subnet 발견: {name} ({subnet['id']})")
+            return subnet["id"]
+    sys.exit(f"[ERROR] Subnet '{name}'을 찾을 수 없습니다.")
+
+
+def create_security_group(token, name, vpc_id, description=""):
+    """보안 그룹 생성"""
+    payload = {"name": name, "vpc_id": vpc_id, "description": description}
+    resp = requests.post(f"{BNS_BASE}/security-groups", json=payload, headers=auth_headers(token))
+    resp.raise_for_status()
+    sg = resp.json()
+    sg_id = sg.get("id") or sg.get("security_group", {}).get("id")
+    print(f"[OK] 보안 그룹 생성: {name} ({sg_id})")
+    return sg_id
+
+
+def add_inbound_rule(token, sg_id, port):
+    """보안 그룹에 TCP 인바운드 규칙 추가"""
+    payload = {
+        "direction": "inbound",
+        "protocol": "tcp",
+        "port_range_min": port,
+        "port_range_max": port,
+        "remote_ip_prefix": "0.0.0.0/0",
+    }
+    resp = requests.post(f"{BNS_BASE}/security-groups/{sg_id}/rules", json=payload, headers=auth_headers(token))
+    resp.raise_for_status()
+    print(f"[OK] 인바운드 규칙 추가: port {port} (0.0.0.0/0)")
+
+
+def create_instance(token, name, image_id, subnet_id, sg_id, key_name=None):
+    """VM 인스턴스 생성"""
+    payload = {
+        "instance_name": name,
+        "image_id": image_id,
+        "flavor": FLAVOR,
+        "networks": [{"subnet_id": subnet_id, "security_groups": [sg_id]}],
+    }
+    if key_name:
+        payload["key_name"] = key_name
+
+    resp = requests.post(f"{BCS_BASE}/instances", json=payload, headers=auth_headers(token))
+    resp.raise_for_status()
+    instance = resp.json()
+    instance_id = instance.get("id") or instance.get("instance", {}).get("id")
+    print(f"[OK] 인스턴스 생성 요청: {name} ({instance_id})")
+    return instance_id
+
+
+def main():
+    print("=" * 50)
+    print("카카오클라우드 VM 생성 스크립트")
+    print("=" * 50)
+
+    # 1. 인증
+    token = get_token()
+
+    # 2. VPC / Subnet 조회
+    vpc_id = find_vpc(token, "test-vpc")
+    subnet_id = find_subnet(token, "test-subnet1")
+
+    # 3. 보안 그룹 생성
+    print("\n--- 보안 그룹 생성 ---")
+    ubuntu_sg_id = create_security_group(token, "test-ubuntu-sg", vpc_id, "Ubuntu SSH 접근용")
+    add_inbound_rule(token, ubuntu_sg_id, 22)
+
+    windows_sg_id = create_security_group(token, "test-window-sg", vpc_id, "Windows RDP 접근용")
+    add_inbound_rule(token, windows_sg_id, 3389)
+
+    # 4. VM 인스턴스 생성
+    print("\n--- VM 인스턴스 생성 ---")
+    ubuntu_id = create_instance(token, "test-ubuntu", UBUNTU_2404_IMAGE_ID, subnet_id, ubuntu_sg_id, KEY_NAME)
+    windows_id = create_instance(token, "test-window", WINDOWS_2022_IMAGE_ID, subnet_id, windows_sg_id)
+
+    # 5. 결과 요약
+    print("\n" + "=" * 50)
+    print("생성 완료 요약")
+    print("=" * 50)
+    print(f"  Ubuntu VM   : test-ubuntu  ({ubuntu_id})")
+    print(f"    - 이미지  : Ubuntu 24.04")
+    print(f"    - 보안그룹: test-ubuntu-sg (SSH 22)")
+    print(f"  Windows VM  : test-window  ({windows_id})")
+    print(f"    - 이미지  : Windows Server 2022")
+    print(f"    - 보안그룹: test-window-sg (RDP 3389)")
+    print(f"  VPC         : test-vpc ({vpc_id})")
+    print(f"  Subnet      : test-subnet1 ({subnet_id})")
+    print("=" * 50)
+    print("\n※ 인스턴스 생성은 비동기 처리됩니다. 콘솔에서 상태를 확인하세요.")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+</details>
+
+**실행 방법:**
+
+```bash
+# 환경변수 설정
+export KAKAO_ACCESS_KEY_ID="발급받은_ACCESS_KEY_ID"
+export KAKAO_SECRET_KEY="발급받은_SECRET_KEY"
+export UBUNTU_2404_IMAGE_ID="Ubuntu_24.04_이미지_ID"
+export WINDOWS_2022_IMAGE_ID="Windows_2022_이미지_ID"
+export KAKAO_KEY_NAME="SSH_키페어_이름"
+
+# 실행
+pip install requests
+python create_vms.py
+```
+
+**스크립트 동작 흐름:**
 
 ```
-카카오클라우드에서 Kubernetes 클러스터를 생성하고,
-워커 노드 3대로 구성하는 스크립트를 만들어줘.
+1. IAM 토큰 발급
+2. test-vpc, test-subnet1 이름으로 VPC/Subnet ID 조회
+3. 보안 그룹 생성
+   ├── test-ubuntu-sg → TCP 22 (SSH) 인바운드
+   └── test-window-sg → TCP 3389 (RDP) 인바운드
+4. VM 인스턴스 생성
+   ├── test-ubuntu  — Ubuntu 24.04 + SSH 키페어
+   └── test-window  — Windows Server 2022
+```
+
+> 사용자는 한 줄의 요청만 했지만, AI가 MCP를 통해 카카오클라우드 API의 인증 방식, 엔드포인트 URL, 파라미터 형식을 자동으로 파악하여 바로 실행 가능한 스크립트를 생성했습니다.
+
+### 다른 요청 예시
+
+```
+# VPC 네트워크 구성
+"카카오클라우드에서 VPC를 만들고, 퍼블릭/프라이빗 서브넷을 구성하는 코드를 작성해줘."
+
+# Kubernetes 클러스터 배포
+"카카오클라우드에서 Kubernetes 클러스터를 생성하고, 워커 노드 3대로 구성하는 스크립트를 만들어줘."
+
+# MySQL 데이터베이스 생성
+"카카오클라우드에서 MySQL 8.0 데이터베이스를 생성하는 코드 작성해줘."
+
+# 로드 밸런서 설정
+"카카오클라우드에서 로드 밸런서를 만들고 2대의 웹 서버에 트래픽을 분산하는 코드 작성해줘."
 ```
 
 ## 개발
