@@ -1,6 +1,6 @@
 [project]
 name = "kakaocloud-openapi-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "KakaoCloud OpenAPI MCP server - AI 코딩 어시스턴트를 위한 카카오클라우드 API 문서 제공"
 readme = "README.md"
 license = "MIT"
