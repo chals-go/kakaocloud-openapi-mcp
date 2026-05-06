@@ -84,3 +84,32 @@ def test_auth_tool():
     assert "인증" in result
     assert "X-Auth-Token" in result
     assert "python" in result.lower() or "Python" in result
+
+
+def test_auth_tool_includes_cloudtrail():
+    """get_auth_guide 출력에 CloudTrail 감사 로그 안내가 포함된다."""
+    result = get_auth_guide()
+    assert "CloudTrail" in result
+    assert "감사 로그" in result
+
+
+def test_detail_tool_operate_instance():
+    """통합 액션 엔드포인트(operate-instance) 상세에 6개 액션이 모두 명시된다."""
+    result = get_api_detail("bcs", "operate-instance")
+    assert "/instances/:instance_id/actions" in result
+    assert "action" in result
+    for action in ("start", "stop", "shelve", "unshelve", "soft-reboot", "hard-reboot"):
+        assert action in result
+
+
+def test_detail_tool_lb_create_extended():
+    """로드밸런서 생성 상세에 target_groups, listeners 필드가 포함된다."""
+    result = get_api_detail("bns-load-balancer", "create-load-balancer")
+    assert "target_groups" in result
+    assert "listeners" in result
+
+
+def test_search_finds_operate_instance():
+    """'인스턴스 상태 변경' 검색 시 operate-instance가 결과에 포함된다."""
+    result = search_kakaocloud_api("인스턴스 상태 변경")
+    assert "operate-instance" in result

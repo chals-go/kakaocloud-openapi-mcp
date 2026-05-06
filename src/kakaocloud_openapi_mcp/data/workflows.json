@@ -128,7 +128,7 @@
       "id": "setup-load-balancer",
       "name": "Setup Load Balancer",
       "nameKo": "로드 밸런서 설정",
-      "description": "로드 밸런서를 생성하고 대상 그룹과 리스너를 설정하여 트래픽을 분산합니다.",
+      "description": "로드 밸런서를 생성하고 대상 그룹과 리스너를 설정하여 트래픽을 분산합니다. create-load-balancer 호출 시 target_groups/listeners를 함께 전달하면 step 2~3을 생략하고 단일 요청으로 구성할 수 있습니다.",
       "keywords": ["로드밸런서 설정", "lb 설정", "부하분산 설정", "load balancer setup"],
       "steps": [
         {

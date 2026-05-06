@@ -61,4 +61,14 @@ def get_auth_guide() -> str:
         lines.append(code)
         lines.append("```\n")
 
+    # 감사 로그 (CloudTrail)
+    audit = auth.get("audit")
+    if audit:
+        lines.append("## 감사 로그\n")
+        lines.append(f"OpenAPI를 통한 모든 작업은 **{audit.get('service', 'CloudTrail')}**에 자동 기록됩니다.")
+        if audit.get("note"):
+            lines.append(audit["note"])
+        if audit.get("docs"):
+            lines.append(f"\n참조: {audit['docs']}\n")
+
     return "\n".join(lines)

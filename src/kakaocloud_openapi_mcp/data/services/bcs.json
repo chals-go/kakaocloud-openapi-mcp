@@ -91,6 +91,29 @@
       }
     },
     {
+      "id": "operate-instance",
+      "method": "POST",
+      "path": "/instances/:instance_id/actions",
+      "summary": "인스턴스 상태 변경 통합 API",
+      "summaryKo": "인스턴스 상태 변경 (start/stop/shelve/unshelve/reboot 통합)",
+      "description": "단일 엔드포인트에서 action 파라미터로 인스턴스의 상태 변경(시작/중지/shelve/unshelve/소프트·하드 리부트)을 수행합니다. 신규 통합 API로, 개별 상태 변경 엔드포인트(start, stop, shelve, unshelve, soft-reboot, hard-reboot) 대신 사용을 권장합니다.",
+      "keywords": ["인스턴스 상태 변경", "통합 액션", "operate instance", "action", "start", "stop", "shelve", "unshelve", "reboot", "soft-reboot", "hard-reboot"],
+      "parameters": [
+        {"name": "instance_id", "in": "path", "type": "string", "required": true, "description": "인스턴스 ID"}
+      ],
+      "requestBody": {
+        "action": {"type": "string", "required": true, "description": "수행할 액션. 허용 값: start, stop, shelve, unshelve, soft-reboot, hard-reboot"}
+      },
+      "exampleRequest": {
+        "action": "stop"
+      },
+      "responses": {
+        "202": {"description": "요청 수락 (비동기 처리)"},
+        "400": {"description": "잘못된 요청 (지원하지 않는 action 등)"},
+        "409": {"description": "현재 상태에서 수행 불가능한 액션"}
+      }
+    },
+    {
       "id": "start-instance",
       "method": "POST",
       "path": "/instances/:instance_id/start",

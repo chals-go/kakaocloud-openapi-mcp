@@ -13,17 +13,32 @@
       "method": "POST",
       "path": "/load-balancers",
       "summary": "로드 밸런서 생성",
-      "summaryKo": "로드 밸런서 생성",
-      "keywords": ["로드밸런서 생성", "lb 생성", "create load balancer"],
+      "summaryKo": "로드 밸런서 생성 (대상 그룹/리스너 동시 생성 지원)",
+      "description": "로드 밸런서를 생성합니다. target_groups 및 listeners 배열을 함께 전달하면 대상 그룹과 리스너를 동시에 구성할 수 있어 별도의 create-target-group / create-listener 호출이 필요 없습니다.",
+      "keywords": ["로드밸런서 생성", "lb 생성", "create load balancer", "대상 그룹 동시 생성", "리스너 동시 생성"],
       "parameters": [],
       "requestBody": {
         "name": {"type": "string", "required": true, "description": "로드 밸런서 이름"},
         "vpc_id": {"type": "string", "required": true, "description": "VPC ID"},
         "subnet_id": {"type": "string", "required": true, "description": "서브넷 ID"},
-        "type": {"type": "string", "required": false, "description": "로드 밸런서 타입 (application/network)"}
+        "type": {"type": "string", "required": false, "description": "로드 밸런서 타입 (application/network)"},
+        "target_groups": {"type": "array", "required": false, "description": "동시 생성할 대상 그룹 배열. 항목 필드: name(string), protocol(HTTP/HTTPS/TCP), port(integer), targets(array, 선택)"},
+        "listeners": {"type": "array", "required": false, "description": "동시 생성할 리스너 배열. 항목 필드: protocol(HTTP/HTTPS/TCP), port(integer), target_group_name(string, 동일 요청 내 target_groups의 name 참조)"}
+      },
+      "exampleRequest": {
+        "name": "my-lb",
+        "vpc_id": "vpc-xxxx",
+        "subnet_id": "subnet-xxxx",
+        "type": "application",
+        "target_groups": [
+          {"name": "web-tg", "protocol": "HTTP", "port": 80}
+        ],
+        "listeners": [
+          {"protocol": "HTTP", "port": 80, "target_group_name": "web-tg"}
+        ]
       },
       "responses": {
-        "201": {"description": "로드 밸런서 생성 완료"}
+        "201": {"description": "로드 밸런서 생성 완료 (대상 그룹/리스너 포함)"}
       }
     },
     {

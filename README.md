@@ -20,14 +20,16 @@ AI → 인증 방법 포함한 완전한 파이썬 스크립트 생성
 
 | 서비스 | 설명 | 엔드포인트 수 |
 |--------|------|:------------:|
-| **BCS** (Beyond Compute Service) | VM, 볼륨, 이미지, 스냅샷, 키페어 | 53 |
+| **BCS** (Beyond Compute Service) | VM, 볼륨, 이미지, 스냅샷, 키페어 (인스턴스 상태 변경 통합 액션 API 포함) | 54 |
 | **VPC** | VPC, 서브넷, 보안 그룹, 라우트 테이블, 공인 IP | 28 |
-| **Load Balancer** | 로드 밸런서, 리스너, 대상 그룹 | 6 |
+| **Load Balancer** | 로드 밸런서, 리스너, 대상 그룹 (생성 시 대상 그룹/리스너 동시 구성 지원) | 6 |
 | **Transit Gateway** | VPC 간 네트워크 연결 | 4 |
 | **Container Pack** | 관리형 Kubernetes (K8s Engine) | 16 |
 | **Data Store** | 관리형 MySQL | 18 |
 
-총 **125개 API 엔드포인트** + **5개 워크플로우** 가이드
+총 **126개 API 엔드포인트** + **5개 워크플로우** 가이드
+
+> 모든 OpenAPI 호출은 카카오클라우드 **CloudTrail**에 자동 기록되며, 콘솔에서 'OpenAPI' 서비스 이벤트로 조회할 수 있습니다.
 
 ## 설치
 
